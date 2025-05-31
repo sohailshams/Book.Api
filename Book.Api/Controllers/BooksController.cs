@@ -15,7 +15,6 @@ namespace Book.Api.Controllers
                 Id = Guid.NewGuid(),
                 Title = "The Great Gatsby",
                 Author = "F. Scott Fitzgerald",
-                MyProperty = 1,
                 PublishedDate = new DateTime(1925, 4, 10)
             },
             new BookData
@@ -23,7 +22,6 @@ namespace Book.Api.Controllers
                 Id = Guid.NewGuid(),
                 Title = "1984",
                 Author = "George Orwell",
-                MyProperty = 2,
                 PublishedDate = new DateTime(1949, 6, 8)
             }
         };
@@ -44,8 +42,18 @@ namespace Book.Api.Controllers
                 return NotFound();
             }
             return Ok(book);
+        }
 
-
+        [HttpPost]
+        public ActionResult<BookData> CreateBook([FromBody] BookData newBook)
+        {
+            if (newBook == null)
+            {
+                return BadRequest("Book data is required.");
+            }
+            newBook.Id = Guid.NewGuid();
+            books.Add(newBook);
+            return CreatedAtAction(nameof(GetBookById), new { bookId = newBook.Id }, newBook);
         }
     }
 }
