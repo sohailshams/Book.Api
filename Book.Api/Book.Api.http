@@ -1,6 +1,19 @@
 @Book.Api_HostAddress = http://localhost:5122
 
-GET {{Book.Api_HostAddress}}/weatherforecast/
+GET {{Book.Api_HostAddress}}/api/Books
 Accept: application/json
 
 ###
+
+GET {{Book.Api_HostAddress}}/api/Books/9009db0d-8466-4566-a921-2148908911b6
+Accept: application/json
+
+###
+
+POST {{Book.Api_HostAddress}}/api/Books
+content-type: application/json
+{
+  "title": "The Test Book",
+  "author": "Tester",
+  "publishedDate": "2025-04-10T00:00:00"
+}
