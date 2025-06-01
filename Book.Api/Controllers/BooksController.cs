@@ -55,5 +55,24 @@ namespace Book.Api.Controllers
             books.Add(newBook);
             return CreatedAtAction(nameof(GetBookById), new { bookId = newBook.Id }, newBook);
         }
+
+        [HttpPut]
+        [Route("{bookId:Guid}")]
+        public ActionResult<BookData> UpdateBook([FromRoute] Guid bookId, [FromBody] BookData updatedBook)
+        {
+            if (updatedBook == null)
+            {
+                return BadRequest("Book data is required.");
+            }
+            var existingBook = books.FirstOrDefault(b => b.Id == bookId);
+            if (existingBook == null)
+            {
+                return NotFound($"Book with {bookId} does not exist.");
+            }
+            existingBook.Title = updatedBook.Title;
+            existingBook.Author = updatedBook.Author;
+            existingBook.PublishedDate = updatedBook.PublishedDate;
+            return Ok(existingBook);
+        }
     }
 }
