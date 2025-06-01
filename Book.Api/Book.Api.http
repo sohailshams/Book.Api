@@ -5,7 +5,7 @@ Accept: application/json
 
 ###
 
-GET {{Book.Api_HostAddress}}/api/Books/9009db0d-8466-4566-a921-2148908911b6
+GET {{Book.Api_HostAddress}}/api/Books/ed425e5a-3c80-4c0a-acc4-f796c1de17d5
 Accept: application/json
 
 ###
@@ -15,5 +15,14 @@ content-type: application/json
 {
   "title": "The Test Book",
   "author": "Tester",
+  "publishedDate": "2025-04-10T00:00:00"
+}
+
+###
+PUT {{Book.Api_HostAddress}}/api/books/ed425e5a-3c80-4c0a-acc4-f796c1de17d5
+content-type: application/json
+{
+   "title": "The Great Gatsby Updated",
+  "author": "F. Scott Fitzgerald Updated",
   "publishedDate": "2025-04-10T00:00:00"
 }
