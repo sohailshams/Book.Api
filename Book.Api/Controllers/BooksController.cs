@@ -74,5 +74,18 @@ namespace Book.Api.Controllers
             existingBook.PublishedDate = updatedBook.PublishedDate;
             return Ok(existingBook);
         }
+
+        [HttpDelete]
+        [Route("{bookId:Guid}")]
+        public ActionResult DeleteBook([FromRoute] Guid bookId)
+        {
+            var existingBook = books.FirstOrDefault(b => b.Id == bookId);
+            if (existingBook == null)
+            {
+                return NotFound($"Book with {bookId} does not exist.");
+            }
+            books.Remove(existingBook);
+            return Ok(new {Message = $"Book with {bookId} has been deleted.", Book = existingBook});
+        }
     }
 }
