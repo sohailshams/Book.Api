@@ -19,10 +19,14 @@ content-type: application/json
 }
 
 ###
-PUT {{Book.Api_HostAddress}}/api/books/ed425e5a-3c80-4c0a-acc4-f796c1de17d5
+PUT {{Book.Api_HostAddress}}/api/books/f8b2bef2-99f6-466b-a4a0-19374c21d131
 content-type: application/json
 {
    "title": "The Great Gatsby Updated",
   "author": "F. Scott Fitzgerald Updated",
   "publishedDate": "2025-04-10T00:00:00"
 }
+
+###
+DELETE {{Book.Api_HostAddress}}/api/books/63fc080b-15da-4cdc-b31b-f57e2e38c2e5
+accept: application/json
