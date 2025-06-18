@@ -1,3 +1,7 @@
+using Book.Api.EntityFramework;
+using Microsoft.EntityFrameworkCore;
+using System;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,6 +11,8 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var connectionString = builder.Configuration.GetConnectionString("BookDbConnectionString");
+builder.Services.AddDbContext<BookDbContext>(options =>
+options.UseNpgsql(connectionString));
 
 var app = builder.Build();
 
