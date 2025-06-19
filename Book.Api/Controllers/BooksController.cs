@@ -1,6 +1,8 @@
-﻿using Book.Api.Models;
+﻿using Book.Api.EntityFramework;
+using Book.Api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Book.Api.Controllers
 {
@@ -8,35 +10,25 @@ namespace Book.Api.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        public static List<BookData> books = new List<BookData>
+        private readonly BookDbContext _dbContext;
+
+        public BooksController(BookDbContext dbContext)
         {
-            new BookData
-            {
-                Id = Guid.NewGuid(),
-                Title = "The Great Gatsby",
-                Author = "F. Scott Fitzgerald",
-                PublishedDate = new DateTime(1925, 4, 10)
-            },
-            new BookData
-            {
-                Id = Guid.NewGuid(),
-                Title = "1984",
-                Author = "George Orwell",
-                PublishedDate = new DateTime(1949, 6, 8)
-            }
-        };
+            _dbContext = dbContext;
+        }
 
         [HttpGet]
-        public ActionResult<List<BookData>> GetAllBooks()
+        public async Task<ActionResult<List<BookData>>> GetAllBooks()
         {
+            var books = await _dbContext.Books.ToListAsync();
             return Ok(books);
         }
 
         [HttpGet]
         [Route("{bookId:Guid}")]
-        public ActionResult<List<BookData>> GetBookById([FromRoute] Guid bookId)
+        public async Task<ActionResult<List<BookData>>> GetBookById([FromRoute] Guid bookId)
         {
-            var book = books.FirstOrDefault(b => b.Id == bookId);
+            var book = await _dbContext.Books.FirstOrDefaultAsync(b => b.Id == bookId);
             if (book == null)
             {
                 return NotFound();
@@ -45,26 +37,27 @@ namespace Book.Api.Controllers
         }
 
         [HttpPost]
-        public ActionResult<BookData> CreateBook([FromBody] BookData newBook)
+        public async Task<ActionResult<BookData>> CreateBook([FromBody] BookData newBook)
         {
             if (newBook == null)
             {
                 return BadRequest("Book data is required.");
             }
             newBook.Id = Guid.NewGuid();
-            books.Add(newBook);
+            _dbContext.Books.Add(newBook);
+            await _dbContext.SaveChangesAsync();
             return CreatedAtAction(nameof(GetBookById), new { bookId = newBook.Id }, newBook);
         }
 
         [HttpPut]
         [Route("{bookId:Guid}")]
-        public ActionResult<BookData> UpdateBook([FromRoute] Guid bookId, [FromBody] BookData updatedBook)
+        public async Task<ActionResult<BookData>> UpdateBook([FromRoute] Guid bookId, [FromBody] BookData updatedBook)
         {
             if (updatedBook == null)
             {
                 return BadRequest("Book data is required.");
             }
-            var existingBook = books.FirstOrDefault(b => b.Id == bookId);
+            var existingBook = await _dbContext.Books.FirstOrDefaultAsync(b => b.Id == bookId);
             if (existingBook == null)
             {
                 return NotFound($"Book with {bookId} does not exist.");
@@ -72,19 +65,21 @@ namespace Book.Api.Controllers
             existingBook.Title = updatedBook.Title;
             existingBook.Author = updatedBook.Author;
             existingBook.PublishedDate = updatedBook.PublishedDate;
+            await _dbContext.SaveChangesAsync();
             return Ok(existingBook);
         }
 
         [HttpDelete]
         [Route("{bookId:Guid}")]
-        public ActionResult DeleteBook([FromRoute] Guid bookId)
+        public async Task<ActionResult> DeleteBook([FromRoute] Guid bookId)
         {
-            var existingBook = books.FirstOrDefault(b => b.Id == bookId);
+            var existingBook = await _dbContext.Books.FirstOrDefaultAsync(b => b.Id == bookId);
             if (existingBook == null)
             {
                 return NotFound($"Book with {bookId} does not exist.");
             }
-            books.Remove(existingBook);
+            _dbContext.Books.Remove(existingBook);
+            await _dbContext.SaveChangesAsync();
             return Ok(new {Message = $"Book with {bookId} has been deleted.", Book = existingBook});
         }
     }
